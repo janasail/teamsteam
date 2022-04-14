@@ -1,0 +1,1 @@
+Prototip v1.1, ispravke
