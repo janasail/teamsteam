@@ -1,0 +1,43 @@
+INSERT INTO Admin (KorImeAdm, LozinkaAdm, EmailAdm)
+VALUES 
+('Tamara', 'Bunnies&Cookies', 'tamara1@gmail.com'), 
+('Dejan',  'Sand&Castles',	  'dejan1@gmail.com');
+
+INSERT INTO Vrtic (PIB, Naziv, Adresa, EmailVrt, BrRacun)
+VALUES 
+(12357585, 'NBVrtic', 'Bulevar Arsenija Čarnojevića 33', 'nbvrtic@gmail.com', 2345678), 
+(65456465, 'SCVrtic', 'Sv. Save 15, Vračar', 'scvrtic@gmail.com', 44558866);
+
+INSERT INTO Korisnik(Ime, Prezime, BrTel, EmailKor, Lozinka, PIB)
+VALUES
+('Judea', 'Perl', '0651111111', 'judeaPerl@hotmail.com', 'pass123', 12357585),
+('Tim', 'Berners-Lee', '0652222222', 'timLee@gmail.com', 'pass123', 12357585),
+('Leslie', 'Lamport', '0653333333', 'lLamport@protonmail.com', 'pass123', 12357585),
+('Carlo', 'Rovelli', '0654444444', 'cRovelli@hotmail.com', 'pass123', 65456465),
+('Edward', 'Witten', '0655555555', 'edWitten@gmail.com', 'pass123', 65456465), 
+('Sofija', 'Jovanović', '063666666', 'sofJovanovic@gmail.com', 'pass123', 12357585),   
+('Dunja', 'Miletić', '0637777777', 'dunjaMiletic@gmail.com', 'pass123', 12357585), 
+('Sara', 'Crnojević', '0638888888', 'dunjaMiletic@gmail.com', 'pass123', 12357585),
+('Stefan', 'Đorđević', '0639999999', 'stefanD@hotmail.com', 'pass123', 65456465),
+('Filip', 'Živojinović', '0630000000', 'filipZ@protonmail.com', 'pass123', 65456465);
+
+INSERT INTO Zaposleni(IdKor, NivoOvlastenosti)
+VALUES
+(6, '2'),
+(7, '2'),
+(8, '2'),
+(9, '2'),
+(10, '2');
+
+INSERT INTO Roditelj
+SELECT IdKor FROM Korisnik
+WHERE IdKor < 6;
+
+INSERT INTO Grupa(ImeGrupe, Uzrast, PIB, IdKor)
+VALUES
+('Zvezdice', '0-3', 12357585, 6),
+('Bikini Botom Spuzve', '6-8', 12357585, 7),
+('Kolačići', '4-5', 12357585, 8),
+('Zečići', '0-3', 65456465, 9),
+('Vrapčići', '0-3', 65456465, 9);
+
