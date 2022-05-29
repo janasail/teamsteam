@@ -1,0 +1,156 @@
+CREATE DATABASE MojVrtic;
+
+CREATE TABLE Vrtic
+(
+	PIB                  INTEGER NOT NULL,
+	Naziv                VARCHAR(20) NULL,
+	Adresa               VARCHAR(40) NULL,
+	EmailVrt             VARCHAR(25) NULL,
+	BrRacun              INTEGER NOT NULL,
+	CONSTRAINT XPKVrtic PRIMARY KEY (PIB)
+);
+-- -------------------------------------------------------!!! 
+
+CREATE TABLE Korisnik
+(
+	IdKor                INTEGER NOT NULL AUTO_INCREMENT,
+	Ime                  VARCHAR(15) NULL,
+	Prezime              VARCHAR(30) NULL,
+	BrTel                VARCHAR(10) NULL,
+	EmailKor             VARCHAR(25) NOT NULL,
+	Lozinka              VARCHAR(20) NOT NULL,
+	PIB                  INTEGER NOT NULL,
+	CONSTRAINT XPKKorisnik PRIMARY KEY (IdKor)
+);
+
+-- -------------------------------------------------------!!!
+
+CREATE TABLE Zaposleni
+(
+	IdKor                INTEGER NOT NULL,
+	NivoOvlastenosti     ENUM('1','2','0') NOT NULL DEFAULT '0'
+);
+ALTER TABLE Zaposleni
+ADD CONSTRAINT XPKZaposleni PRIMARY KEY (IdKor);
+-- -------------------------------------------------------!!!
+
+CREATE TABLE Roditelj
+(
+	IdKor                INTEGER NOT NULL,
+	CONSTRAINT XPKRoditelj PRIMARY KEY (IdKor)
+);
+-- -------------------------------------------------------!!!
+
+CREATE TABLE Dijete
+(
+	IdPot                INTEGER NOT NULL AUTO_INCREMENT,
+	ImePot               VARCHAR(15) NOT NULL,
+	PrezimePot           VARCHAR(30) NOT NULL,
+	DatumRod             DATE NOT NULL,
+    IdKor                INTEGER NOT NULL,
+	IdGrupe              INTEGER NOT NULL,
+	CONSTRAINT XPKDijete PRIMARY KEY (IdPot)
+);
+-- -------------------------------------------------------!!!
+
+CREATE TABLE Grupa
+(
+	IdGrupe              INTEGER NOT NULL AUTO_INCREMENT,
+	ImeGrupe             VARCHAR(20) NOT NULL,
+	Uzrast               ENUM('0-3', '4-5', '6-8') DEFAULT '6-8',
+	PIB                  INTEGER NULL,
+	IdKor                INTEGER NOT NULL,
+	CONSTRAINT XPKGrupa  PRIMARY KEY (IdGrupe)
+);
+-- -------------------------------------------------------!!!
+
+CREATE TABLE Evidencija
+(
+	Opcija               ENUM('D', 'OT', 'OD') NOT NULL DEFAULT 'OD',
+	DatumZap             DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	IdPot                INTEGER NOT NULL,
+	IdKor                INTEGER NULL,
+	CONSTRAINT XPKEvidencija PRIMARY KEY (IdPot,Opcija,DatumZap)
+);
+-- -------------------------------------------------------!!!
+
+CREATE TABLE Sadrzaj
+(
+	IdSadr               INTEGER NOT NULL AUTO_INCREMENT,
+	DatumPost            DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	Info                 TEXT NOT NULL,
+	IdKor                INTEGER NULL,
+	IdGrupe              INTEGER NULL,
+	IdPot                INTEGER NULL,
+    CONSTRAINT XPKSadrzaj PRIMARY KEY (IdSadr)
+);
+-- -------------------------------------------------------!!!
+
+CREATE TABLE Komentar
+(
+	DatumKom             DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	Info                 TINYTEXT NOT NULL,
+	IdSadr               INTEGER NOT NULL,
+	IdKor                INTEGER NOT NULL,
+    CONSTRAINT XPKKomentar PRIMARY KEY (IdSadr,DatumKom,IdKor)
+);
+-- -------------------------------------------------------!!!
+
+CREATE TABLE Admin
+(
+	KorImeAdm            VARCHAR(25) NOT NULL,
+	LozinkaAdm           VARCHAR(20) NOT NULL,
+	EmailAdm             VARCHAR(25) NOT NULL,
+	CONSTRAINT XPKAdmin PRIMARY KEY (KorImeAdm)
+);
+-- -------------------------------------------------------!!!
+
+-- ----------------Referential Integrity Constraints------!!!
+
+ALTER TABLE Korisnik
+ADD CONSTRAINT Vrtic_ima_Korisnik 	FOREIGN KEY (PIB) REFERENCES Vrtic (PIB) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE Zaposleni
+ADD CONSTRAINT Zaposleni_je_Korisnik 	FOREIGN KEY (IdKor) REFERENCES Korisnik (IdKor) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE Roditelj
+ADD CONSTRAINT Roditelj_je_Korisnik 	FOREIGN KEY (IdKor) REFERENCES Korisnik (IdKor) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE Dijete
+ADD CONSTRAINT Grupa_sadrzi_Dijete 	FOREIGN KEY (IdGrupe) REFERENCES Grupa (IdGrupe) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE Dijete
+ADD CONSTRAINT Roditelj_ima_Dijete 	FOREIGN KEY (IdKor) REFERENCES Roditelj (IdKor) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE Grupa
+ADD CONSTRAINT Vrtic_ima_Grupa 		FOREIGN KEY (PIB) REFERENCES Vrtic (PIB) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE Grupa
+ADD CONSTRAINT Zaposleni_nadgleda_Grupa FOREIGN KEY (IdKor) REFERENCES Zaposleni (IdKor) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE Evidencija
+ADD CONSTRAINT Dijete_je_dobilo_Evidencija 	FOREIGN KEY (IdPot) REFERENCES Dijete (IdPot) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE Evidencija
+ADD CONSTRAINT Vaspitac_kreira_Evidencija 	FOREIGN KEY (IdKor) REFERENCES Zaposleni (IdKor) ON DELETE SET NULL ON UPDATE CASCADE;
+
+ALTER TABLE Sadrzaj
+ADD CONSTRAINT Korisnik_postavlja_Sadrzaj 	FOREIGN KEY (IdKor) REFERENCES Korisnik (IdKor) ON DELETE SET NULL ON UPDATE CASCADE;
+
+ALTER TABLE Sadrzaj
+ADD CONSTRAINT Sadrzaj_za_Grupa 	FOREIGN KEY (IdGrupe) REFERENCES Grupa (IdGrupe) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE Sadrzaj
+ADD CONSTRAINT Sadrzaj_za_Dijete 	FOREIGN KEY (IdPot) REFERENCES Dijete (IdPot) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE Komentar
+ADD CONSTRAINT Sadrzaj_ima_Komentar 	FOREIGN KEY (IdSadr) REFERENCES Sadrzaj (IdSadr) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE Komentar
+ADD CONSTRAINT Korisnik_postavlja_Komentar 	FOREIGN KEY (IdKor) REFERENCES Korisnik (IdKor) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+
+
+
+
+
